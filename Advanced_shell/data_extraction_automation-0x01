@@ -1,6 +1,18 @@
 #!/bin/bash
+
+# Extract data using jq
 name=$(jq -r '.name' data.json)
-height=$(jq -r '.height/10 | tostring + \"m\"' data.json)
-weight=$(jq -r '.weight/10 | tostring + \"kg\"' data.json)
-type=$(jq -r '.types[0].type.name' data.json | sed 's/.*/\u&/')
-echo "${name^} is of type ${type^}, weighs $weight, and is $height tall."
+height=$(jq -r '.height/10' data.json)
+weight=$(jq -r '.weight/10' data.json)
+type=$(jq -r '.types[0].type.name' data.json)
+
+# Format numbers with awk
+formatted_height=$(awk -v h="$height" 'BEGIN{printf "%.1f", h}')
+formatted_weight=$(awk -v w="$weight" 'BEGIN{printf "%.1f", w}')
+
+# Capitalize first letters with sed
+capitalized_name=$(echo "$name" | sed 's/.*/\u&/')
+capitalized_type=$(echo "$type" | sed 's/.*/\u&/')
+
+# Final output
+echo "$capitalized_name is of type $capitalized_type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
